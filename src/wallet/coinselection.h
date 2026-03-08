@@ -105,12 +105,12 @@ struct CoinEligibilityFilter
 };
 
 enum class InputPreference {
-    // Use LTC and MWEB inputs (MIXED)
+    // Use LC2 and MWEB inputs (MIXED)
     ANY,
     // Only use MWEB inputs (used when explicitly pegging-out)
     MWEB_ONLY,
     // Only use canonical inputs (used when explicitly pegging-in)
-    LTC_ONLY
+    LC2_ONLY
 };
 
 struct OutputGroup
