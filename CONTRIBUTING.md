@@ -1,3 +1,6 @@
+LitecoinII is derived from the Litecoin Core codebase.  
+Contribution guidelines are largely inherited from the upstream Litecoin project.
+
 Contributing to Litecoin Core
 ============================
 
