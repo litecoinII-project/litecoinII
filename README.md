@@ -46,10 +46,10 @@ seeds.lc2.online
 -------
 ## Addnodes:
 ```fix
-addnode=45.77.105.33:9223
-addnode=45.77.156.233:9223
-addnode=149.28.226.77:9223
-addnode=45.63.23.171:9223
-addnode=45.76.13.163:9223
-addnode=45.77.76.246:9223
+addnode=node01.lc2.online
+addnode=node02.lc2.online
+addnode=node03.lc2.online
+addnode=node04.lc2.online
+addnode=node05.lc2.online
+addnode=node06.lc2.online
 ```
