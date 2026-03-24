@@ -36,3 +36,20 @@ The `0.21` branch contains the LitecoinII implementation derived from Litecoin C
 
 Release tags are created periodically to mark stable versions of LitecoinII Core.
 
+
+-------
+## Dnsseeder: 
+```fix
+seeds.lc2.online
+```
+
+-------
+## Addnodes:
+```fix
+addnode=45.77.105.33:9223
+addnode=45.77.156.233:9223
+addnode=149.28.226.77:9223
+addnode=45.63.23.171:9223
+addnode=45.76.13.163:9223
+addnode=45.77.76.246:9223
+```
