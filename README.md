@@ -32,7 +32,7 @@ Development Process
 
 The `master` branch tracks upstream LitecoinII development and is kept synchronized with the LitecoinII repository when possible.
 
-The `0.21.5.4` branch contains the LitecoinII implementation derived from LitecoinII Core v0.21.5.4.
+We started with the `0.21.0.4` branch. Now, the `0.21.5.4` branch contains the LitecoinII implementation derived from LitecoinII Core v0.21.5.4.
 
 Release tags are created periodically to mark stable versions of LitecoinII Core.
 
