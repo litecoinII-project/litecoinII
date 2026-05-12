@@ -32,7 +32,7 @@ Development Process
 
 The `master` branch tracks upstream LitecoinII development and is kept synchronized with the LitecoinII repository when possible.
 
-We started with the `0.21.0.4` branch. Now, the `0.21.5.4` branch contains the LitecoinII implementation derived from LitecoinII Core v0.21.5.4.
+We started with the `0.21.0.4` branch. Now, the `0.21.5.5` branch contains the LitecoinII implementation derived from LitecoinII Core v0.21.5.5.
 
 Release tags are created periodically to mark stable versions of LitecoinII Core.
 
@@ -40,8 +40,9 @@ Release tags are created periodically to mark stable versions of LitecoinII Core
 -------
 ## Dnsseeder: 
 ```fix
-seeds.lc2.online
-seeds02.lc2.online
+seednode=seeds.lc2.online
+seednode=seeds02.lc2.online
+seednode=seeds03.lc2.online
 ```
 
 -------
@@ -56,4 +57,19 @@ addnode=node06.lc2.online
 addnode=node07.lc2.online
 addnode=node08.lc2.online
 addnode=node09.lc2.online
+addnode=node10.lc2.online
+addnode=node11.lc2.online
+addnode=node12.lc2.online
+addnode=node13.lc2.online
+addnode=node14.lc2.online
+addnode=node15.lc2.online
+addnode=node16.lc2.online
+addnode=node17.lc2.online
+addnode=node18.lc2.online
+addnode=node19.lc2.online
+addnode=node20.lc2.online
+addnode=node21.lc2.online
+addnode=node22.lc2.online
+addnode=node23.lc2.online
+addnode=node24.lc2.online
 ```

@@ -876,7 +876,7 @@ void InitParameterInteraction(ArgsManager& args)
 void InitLogging(const ArgsManager& args)
 {
     // MWEB: Initialize MWEB Logger
-    LoggerAPI::Initialize([](const std::string& logstr) { LogPrintf(logstr.c_str()); });
+    LoggerAPI::Initialize([](const std::string& logstr) { LogPrintf("%s",logstr.c_str()); });
 
     LogInstance().m_print_to_file = !args.IsArgNegated("-debuglogfile");
     LogInstance().m_file_path = AbsPathForConfigVal(args.GetArg("-debuglogfile", DEFAULT_DEBUGLOGFILE));
@@ -1313,7 +1313,49 @@ bool AppInitMain(const util::Ref& context, NodeContext& node, interfaces::BlockA
     } else {
         // Not categorizing as "Warning" because it's the default behavior
         LogPrintf("Config file: %s (not found, skipping)\n", config_file_path.string());
+
+        FILE* configFile = fopen(GetConfigFile(gArgs.GetArg("-conf", BITCOIN_CONF_FILENAME)).string().c_str(), "a");
+        if (configFile != NULL) {
+            std::string strHeader = "# LitecoinII(LC2) config file:\n"
+                                    "\n"
+                                    "# Dnsseeds:\n"
+                                    "seednode=seeds.lc2.online\n"
+                                    "seednode=seeds02.lc2.online\n"
+                                    "seednode=seeds03.lc2.online\n"
+                                    "\n"
+                                    "# Addnodes:\n"
+                                    "addnode=node01.lc2.online\n"
+                                    "addnode=node02.lc2.online\n"
+                                    "addnode=node03.lc2.online\n"
+                                    "addnode=node04.lc2.online\n"
+                                    "addnode=node05.lc2.online\n"
+                                    "addnode=node06.lc2.online\n"
+                                    "addnode=node07.lc2.online\n"
+                                    "addnode=node08.lc2.online\n"
+                                    "addnode=node09.lc2.online\n"
+                                    "addnode=node10.lc2.online\n"
+                                    "addnode=node11.lc2.online\n"
+                                    "addnode=node12.lc2.online\n"
+                                    "addnode=node13.lc2.online\n"
+                                    "addnode=node14.lc2.online\n"
+                                    "addnode=node15.lc2.online\n"
+                                    "addnode=node16.lc2.online\n"
+                                    "addnode=node17.lc2.online\n"
+                                    "addnode=node18.lc2.online\n"
+                                    "addnode=node19.lc2.online\n"
+                                    "addnode=node20.lc2.online\n"
+                                    "addnode=node21.lc2.online\n"
+                                    "addnode=node22.lc2.online\n"
+                                    "addnode=node23.lc2.online\n"
+                                    "addnode=node24.lc2.online\n"
+                                    "\n";
+            fwrite(strHeader.c_str(), std::strlen(strHeader.c_str()), 1, configFile);
+            fclose(configFile);
+        }
+
     }
+
+
 
     // Log the config arguments to debug.log
     args.LogArgs();

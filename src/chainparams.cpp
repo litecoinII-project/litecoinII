@@ -101,8 +101,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 209664;
 
-        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000041d2fb9dc6ddf6e7");
-        consensus.defaultAssumeValid = uint256S("0xaf87867f08bf8bcdf07883d0091c4784ed318ac7268ee27f3f0f54cba2838d0c");
+        consensus.nMinimumChainWork = uint256S("0x00000000000000000000000000000000000000000000000053588dd4f47de69b");
+        consensus.defaultAssumeValid = uint256S("0x1c39732cb987f7db6c7060a5419245e3f762ee579c7a3afed58df9c1e9ce831e");
 
         consensus.mweb_input_metadata_grandfather_blockhash = uint256();
         consensus.frozen_mweb_output_ids = GetFrozenMWEBOutputIDs();
@@ -128,6 +128,7 @@ public:
 
         vSeeds.emplace_back("seeds.lc2.online");
         vSeeds.emplace_back("seeds02.lc2.online");
+        vSeeds.emplace_back("seeds03.lc2.online");
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1,48);
         base58Prefixes[SCRIPT_ADDRESS] = std::vector<unsigned char>(1,5);
@@ -153,14 +154,15 @@ public:
                 {  9779, uint256S("0xefa96d75b5ded1fdfc3b6d170d3a92970fcebd5ac0073a1789c96abfd24b797d")},
                 {  40803, uint256S("0xb71c9b96377c336842c038743eacd8d21084782314afa6f899514f8c1b48df63")},
                 {  45526, uint256S("0xaf87867f08bf8bcdf07883d0091c4784ed318ac7268ee27f3f0f54cba2838d0c")},
+                {  49700, uint256S("0x1c39732cb987f7db6c7060a5419245e3f762ee579c7a3afed58df9c1e9ce831e")},
             }
         };
 
         chainTxData = ChainTxData{
-            // Data from rpc: getchaintxstats 45526 af87867f08bf8bcdf07883d0091c4784ed318ac7268ee27f3f0f54cba2838d0c
-            /* nTime    */ 1776721116,
-            /* nTxCount */ 92782,
-            /* dTxRate  */ 0.02321073204290315
+            // Data from rpc: getchaintxstats 49700 1c39732cb987f7db6c7060a5419245e3f762ee579c7a3afed58df9c1e9ce831e
+            /* nTime    */ 1778517787,
+            /* nTxCount */ 115254,
+            /* dTxRate  */ 0.02203117518142832
         };
     }
 };

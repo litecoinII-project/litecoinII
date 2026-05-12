@@ -379,6 +379,7 @@ void BitcoinApplication::initializeResult(bool success, interfaces::BlockAndHead
 #endif // ENABLE_WALLET
 
         // If -min option passed, start window minimized (iconified) or minimized to tray
+      QTimer::singleShot(2000, window, [=]() {
         if (!gArgs.GetBoolArg("-min", false)) {
             window->show();
         } else if (clientModel->getOptionsModel()->getMinimizeToTray() && window->hasTrayIcon()) {
@@ -388,6 +389,7 @@ void BitcoinApplication::initializeResult(bool success, interfaces::BlockAndHead
         }
         Q_EMIT splashFinished();
         Q_EMIT windowShown(window);
+      });
 
 #ifdef ENABLE_WALLET
         // Now that initialization/startup is done, process any command-line
