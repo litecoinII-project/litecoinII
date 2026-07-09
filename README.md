@@ -41,8 +41,6 @@ Release tags are created periodically to mark stable versions of LitecoinII Core
 ## Dnsseeder: 
 ```fix
 seednode=seeds.lc2.online
-seednode=seeds02.lc2.online
-seednode=seeds03.lc2.online
 ```
 
 -------
@@ -65,11 +63,4 @@ addnode=node14.lc2.online
 addnode=node15.lc2.online
 addnode=node16.lc2.online
 addnode=node17.lc2.online
-addnode=node18.lc2.online
-addnode=node19.lc2.online
-addnode=node20.lc2.online
-addnode=node21.lc2.online
-addnode=node22.lc2.online
-addnode=node23.lc2.online
-addnode=node24.lc2.online
 ```
