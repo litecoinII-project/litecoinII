@@ -27,6 +27,7 @@
 #include <script/descriptor.h>
 #include <streams.h>
 #include <sync.h>
+#include <timedata.h>
 #include <txdb.h>
 #include <txmempool.h>
 #include <undo.h>
@@ -2670,7 +2671,7 @@ static RPCHelpMan getdifficultyalgorithm()
     }
     CBlockHeader probeHeader;
     probeHeader.nTime = static_cast<uint32_t>(GetAdjustedTime());
-    unsigned int nextWorkRequired = GetNextWorkRequired(pindexLast, nullptr, params);
+    unsigned int nextWorkRequired = GetNextWorkRequired(pindexLast, &probeHeader, params);
     const bool lwmaActive = static_cast<uint32_t>(pindexLast->nHeight + 1) >= params.NewDiffForkHeight;
     LogPrint(BCLog::RPC, "getdifficultyalgorithm: height=%d lwmaActive=%d nextBits=%08x\n",
              pindexLast->nHeight, lwmaActive, nextWorkRequired);
