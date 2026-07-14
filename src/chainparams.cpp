@@ -85,7 +85,7 @@ public:
         consensus.nPowTargetSpacing = 2.5 * 60;
         consensus.fPowAllowMinDifficultyBlocks = false;
         consensus.fPowNoRetargeting = false;
-        consensus.NewDiffForkHeight = 62580;
+        consensus.NewDiffForkHeight = 62585;
         consensus.nRuleChangeActivationThreshold = 6048; // 75% of 8064
         consensus.nMinerConfirmationWindow = 8064; // nPowTargetTimespan / nPowTargetSpacing * 4
         consensus.vDeployments[Consensus::DEPLOYMENT_TESTDUMMY].bit = 28;
@@ -208,8 +208,8 @@ public:
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nStartHeight = 0;
         consensus.vDeployments[Consensus::DEPLOYMENT_MWEB].nTimeoutHeight = 209664; // 364 days later
 
-        consensus.nMinimumChainWork = uint256S("0x0000000000000000000000000000000000000000000000000000000000100010");
-        consensus.defaultAssumeValid = uint256S("0x81e63b43e7ebeb2b13dd4c009335b0344c9cade2bc2f61ac30bb4ee5c91e195f");
+        consensus.nMinimumChainWork = uint256S("0x000000000000000000000000000000000000000000000000000000002d66eede");
+        consensus.defaultAssumeValid = uint256S("0x67d09fee2eb68aa3f47e96b43dab82c0033d3c61949bf6d340f7552467bc4946");
 
         pchMessageStart[0] = 0xb4;
         pchMessageStart[1] = 0xd0;
@@ -249,15 +249,15 @@ public:
 
         checkpointData = {
             {
-                {0, uint256S("81e63b43e7ebeb2b13dd4c009335b0344c9cade2bc2f61ac30bb4ee5c91e195f")},
+                {0, uint256S("0x81e63b43e7ebeb2b13dd4c009335b0344c9cade2bc2f61ac30bb4ee5c91e195f")},
+                {176, uint256S("0x67d09fee2eb68aa3f47e96b43dab82c0033d3c61949bf6d340f7552467bc4946")},
             }
         };
 
         chainTxData = ChainTxData{
-            // Data from RPC: getchaintxstats 0 81e63b43e7ebeb2b13dd4c009335b0344c9cade2bc2f61ac30bb4ee5c91e195f
-            /* nTime    */ 1773102955,
-            /* nTxCount */ 0,
-            /* dTxRate  */ 0.000,
+            /* nTime    */ 1784047860,
+            /* nTxCount */ 179,
+            /* dTxRate  */ 0.047392110140323,
         };
     }
 };
