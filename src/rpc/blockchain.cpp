@@ -2668,6 +2668,8 @@ static RPCHelpMan getdifficultyalgorithm()
     if (!pindexLast) {
         throw JSONRPCError(RPC_MISC_ERROR, "Chain tip not available");
     }
+    CBlockHeader probeHeader;
+    probeHeader.nTime = static_cast<uint32_t>(GetAdjustedTime());
     unsigned int nextWorkRequired = GetNextWorkRequired(pindexLast, nullptr, params);
     const bool lwmaActive = static_cast<uint32_t>(pindexLast->nHeight + 1) >= params.NewDiffForkHeight;
     LogPrint(BCLog::RPC, "getdifficultyalgorithm: height=%d lwmaActive=%d nextBits=%08x\n",
