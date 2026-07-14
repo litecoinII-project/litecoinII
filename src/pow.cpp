@@ -15,43 +15,113 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
     assert(pindexLast != nullptr);
     unsigned int nProofOfWorkLimit = UintToArith256(params.powLimit).GetCompact();
 
-    // Only change once per difficulty adjustment interval
-    if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
-    {
-        if (params.fPowAllowMinDifficultyBlocks)
-        {
-            // Special difficulty rule for testnet:
-            // If the new block's timestamp is more than 2* 10 minutes
-            // then allow mining of a min-difficulty block.
-            if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
-                return nProofOfWorkLimit;
-            else
-            {
-                // Return the last non-special-min-difficulty-rules-block
-                const CBlockIndex* pindex = pindexLast;
-                while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == nProofOfWorkLimit)
-                    pindex = pindex->pprev;
-                return pindex->nBits;
-            }
-        }
-        return pindexLast->nBits;
+    if (static_cast<uint32_t>(pindexLast->nHeight + 1) >= params.NewDiffForkHeight) {
+        return LwmaCalculateNextWorkRequired(pindexLast, params);
+    } else {
+
+      // Only change once per difficulty adjustment interval
+      if ((pindexLast->nHeight+1) % params.DifficultyAdjustmentInterval() != 0)
+      {
+          if (params.fPowAllowMinDifficultyBlocks)
+          {
+              // Special difficulty rule for testnet:
+              // If the new block's timestamp is more than 2* 10 minutes
+              // then allow mining of a min-difficulty block.
+              if (pblock->GetBlockTime() > pindexLast->GetBlockTime() + params.nPowTargetSpacing*2)
+                  return nProofOfWorkLimit;
+              else
+              {
+                  // Return the last non-special-min-difficulty-rules-block
+                  const CBlockIndex* pindex = pindexLast;
+                  while (pindex->pprev && pindex->nHeight % params.DifficultyAdjustmentInterval() != 0 && pindex->nBits == nProofOfWorkLimit)
+                      pindex = pindex->pprev;
+                  return pindex->nBits;
+              }
+          }
+          return pindexLast->nBits;
+      }
+
+      // Go back by what we want to be 14 days worth of blocks
+      // LitecoinII: This fixes an issue where a 51% attack can change difficulty at will.
+      // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
+      int blockstogoback = params.DifficultyAdjustmentInterval()-1;
+      if ((pindexLast->nHeight+1) != params.DifficultyAdjustmentInterval())
+          blockstogoback = params.DifficultyAdjustmentInterval();
+
+      // Go back by what we want to be 14 days worth of blocks
+      const CBlockIndex* pindexFirst = pindexLast;
+      for (int i = 0; pindexFirst && i < blockstogoback; i++)
+          pindexFirst = pindexFirst->pprev;
+
+      assert(pindexFirst);
+
+      return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+    }
+}
+
+// Original version from several developers, LWMA history: https://github.com/zawy12/difficulty-algorithms/issues/24
+unsigned int LwmaCalculateNextWorkRequired(const CBlockIndex* pindexLast, const Consensus::Params& params)
+{
+  if (params.fPowNoRetargeting)
+      return pindexLast->nBits;
+
+    const int64_t T = params.nPowTargetSpacing;
+    const int64_t N_full = 60;
+    const int64_t height = pindexLast->nHeight;
+    const arith_uint256 powLimit = UintToArith256(params.powLimit);
+
+    int64_t N = std::min<int64_t>(N_full, height);
+    if (N <= 0) return powLimit.GetCompact();
+    const int64_t k = N * (N + 1) * T / 2;
+
+    arith_uint256 sumTarget, nextTarget;
+    int64_t thisTimestamp, previousTimestamp;
+    int64_t t = 0, j = 0;
+
+    const CBlockIndex* blockPreviousTimestamp = pindexLast->GetAncestor(height - N);
+    previousTimestamp = blockPreviousTimestamp->GetBlockTime();
+
+    // If LWMA starts at 120, the transition block is 119.
+    const CBlockIndex* pindexTransition = nullptr;
+    arith_uint256 transitionTarget;
+    
+    // We safeguard against looking for a block that doesn't exist (e.g. if height is very low)
+    if (params.NewDiffForkHeight > 0 && height >= params.NewDiffForkHeight - 1) {
+         pindexTransition = pindexLast->GetAncestor(params.NewDiffForkHeight - 1);
+         if (pindexTransition) {
+             transitionTarget.SetCompact(pindexTransition->nBits);
+         }
     }
 
-    // Go back by what we want to be 14 days worth of blocks
-    // LitecoinII: This fixes an issue where a 51% attack can change difficulty at will.
-    // Go back the full period unless it's the first retarget after genesis. Code courtesy of Art Forz
-    int blockstogoback = params.DifficultyAdjustmentInterval()-1;
-    if ((pindexLast->nHeight+1) != params.DifficultyAdjustmentInterval())
-        blockstogoback = params.DifficultyAdjustmentInterval();
+    // Loop through N most recent blocks. 
+    for (int64_t i = height - N + 1; i <= height; i++) {
+        const CBlockIndex* block = pindexLast->GetAncestor(i);
+        thisTimestamp = std::max<int64_t>(block->GetBlockTime(), previousTimestamp + 1);
 
-    // Go back by what we want to be 14 days worth of blocks
-    const CBlockIndex* pindexFirst = pindexLast;
-    for (int i = 0; pindexFirst && i < blockstogoback; i++)
-        pindexFirst = pindexFirst->pprev;
+        int64_t solvetime = std::min<int64_t>(6 * T, thisTimestamp - previousTimestamp);
+        previousTimestamp = thisTimestamp;
 
-    assert(pindexFirst);
+        j++;
+        t += solvetime * j; // Weighted solvetime sum.
+        
+        arith_uint256 target;
 
-    return CalculateNextWorkRequired(pindexLast, pindexFirst->GetBlockTime(), params);
+        if (i < params.NewDiffForkHeight && pindexTransition != nullptr) {
+            target = transitionTarget;
+        } else {
+            target.SetCompact(block->nBits);
+        }
+
+	sumTarget += target;
+    }
+
+    nextTarget = (sumTarget / N);
+    nextTarget *= t;
+    nextTarget /= k;
+
+    if (nextTarget > powLimit) { nextTarget = powLimit; }
+
+    return nextTarget.GetCompact();
 }
 
 unsigned int CalculateNextWorkRequired(const CBlockIndex* pindexLast, int64_t nFirstBlockTime, const Consensus::Params& params)

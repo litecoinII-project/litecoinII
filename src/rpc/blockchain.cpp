@@ -20,6 +20,7 @@
 #include <policy/feerate.h>
 #include <policy/policy.h>
 #include <policy/rbf.h>
+#include <pow.h>
 #include <primitives/transaction.h>
 #include <rpc/server.h>
 #include <rpc/util.h>
@@ -2645,6 +2646,40 @@ static RPCHelpMan dumptxoutset()
     };
 }
 
+static RPCHelpMan getdifficultyalgorithm()
+{
+    return RPCHelpMan{"getdifficultyalgorithm",
+                      "Returns the difficulty adjustment algorithm used to calculate the next block's difficulty.",
+                      {},
+                      RPCResult{RPCResult::Type::OBJ, "", "",
+                          {
+                              {RPCResult::Type::STR, "current_algorithm", "The active difficulty algorithm"},
+                              {RPCResult::Type::STR_HEX, "next_bits", "The computed compact target (nBits) for the next block"},
+                          }},
+                      RPCExamples{
+                          HelpExampleCli("getdifficultyalgorithm", "")
+                          + HelpExampleRpc("getdifficultyalgorithm", "")
+                      },
+        [&](const RPCHelpMan& self, const JSONRPCRequest& request) -> UniValue
+{
+    LOCK(cs_main);
+    const Consensus::Params& params = Params().GetConsensus();
+    const CBlockIndex* pindexLast = ::ChainActive().Tip();
+    if (!pindexLast) {
+        throw JSONRPCError(RPC_MISC_ERROR, "Chain tip not available");
+    }
+    unsigned int nextWorkRequired = GetNextWorkRequired(pindexLast, nullptr, params);
+    const bool lwmaActive = static_cast<uint32_t>(pindexLast->nHeight + 1) >= params.NewDiffForkHeight;
+    LogPrint(BCLog::RPC, "getdifficultyalgorithm: height=%d lwmaActive=%d nextBits=%08x\n",
+             pindexLast->nHeight, lwmaActive, nextWorkRequired);
+    UniValue result(UniValue::VOBJ);
+    result.pushKV("current_algorithm", lwmaActive ? "LwmaCalculateNextWorkRequired" : "CalculateNextWorkRequired");
+    result.pushKV("next_bits", strprintf("%08x", nextWorkRequired));
+    return result;
+},
+    };
+}
+
 void RegisterBlockchainRPCCommands(CRPCTable &t)
 {
 // clang-format off
@@ -2661,6 +2696,7 @@ static const CRPCCommand commands[] =
     { "blockchain",         "getblockheader",         &getblockheader,         {"blockhash","verbose"} },
     { "blockchain",         "getchaintips",           &getchaintips,           {} },
     { "blockchain",         "getdifficulty",          &getdifficulty,          {} },
+    { "blockchain",         "getdifficultyalgorithm", &getdifficultyalgorithm, {} },
     { "blockchain",         "getmempoolancestors",    &getmempoolancestors,    {"txid","verbose"} },
     { "blockchain",         "getmempooldescendants",  &getmempooldescendants,  {"txid","verbose"} },
     { "blockchain",         "getmempoolentry",        &getmempoolentry,        {"txid"} },
