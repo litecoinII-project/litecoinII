@@ -3690,8 +3690,8 @@ static bool ContextualCheckBlock(const CBlock& block, BlockValidationState& stat
 
     // Start enforcing BIP113 (Median Time Past).
     int nLockTimeFlags = 0;
-    if (nHeight >= consensusParams.CSVHeight) {
-        assert(pindexPrev != nullptr);
+    // CSVHeight == 0 && reindex fix
+    if (pindexPrev != nullptr && nHeight >= consensusParams.CSVHeight) {
         nLockTimeFlags |= LOCKTIME_MEDIAN_TIME_PAST;
     }
 
@@ -3954,8 +3954,11 @@ bool CChainState::AcceptBlock(const std::shared_ptr<const CBlock>& pblock, Block
         if (pindex->nChainWork < nMinimumChainWork) return true;
     }
 
+    // reject the genesis block outright as "bad-cb-height"
+    // BIP34Height == 0 && reindex fix
+    bool fIsGenesis = (block.GetHash() == chainparams.GetConsensus().hashGenesisBlock);
     if (!CheckBlock(block, state, chainparams.GetConsensus()) ||
-        !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev)) {
+        (!fIsGenesis && !ContextualCheckBlock(block, state, chainparams.GetConsensus(), pindex->pprev))) {
         if (state.IsInvalid() && state.GetResult() != BlockValidationResult::BLOCK_MUTATED) {
             pindex->nStatus |= BLOCK_FAILED_VALID;
             setDirtyBlockIndex.insert(pindex);
